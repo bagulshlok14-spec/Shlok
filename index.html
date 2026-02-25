@@ -1,11 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shlok's Spider-Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --spidey-red: #e23636;
+            --spidey-blue: #1a237e;
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #2b1010, #000000);
+            color: white; overflow-x: hidden;
+        }
+
+        /* --- LOCK SCREEN --- */
+        #lock-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100; position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--spidey-red);
+            border-radius: 24px;
+            padding: 40px; text-align: center;
+            box-shadow: 0 0 30px rgba(226, 54, 54, 0.3);
+            width: 320px;
+        }
+
+        .title { font-family: 'Bangers', cursive; font-size: 3rem; color: var(--spidey-red); letter-spacing: 2px; margin-bottom: 0; }
+        
+        .pin-dots { display: flex; gap: 15px; margin: 30px 0; justify-content: center; }
+        .dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--border); transition: 0.3s; }
+        .dot.active { background: var(--spidey-red); border-color: var(--spidey-red); box-shadow: 0 0 15px var(--spidey-red); }
+
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: white; font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .key:hover { border-color: var(--spidey-red); background: rgba(226, 54, 54, 0.2); }
+
+        /* --- DASHBOARD --- */
+        #dashboard {
+            display: none; padding: 20px; max-width: 1200px; margin: auto;
+            animation: fadeIn 1s forwards;
+        }
+
+        .spidey-header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--glass); padding: 20px; border-radius: 20px;
+            border-bottom: 4px solid var(--spidey-red); margin-bottom: 30px;
+        }
+
+        .spidey-cartoon {
+            width: 120px; height: auto;
+            filter: drop-shadow(0 0 10px var(--spidey-red));
+        }
+
+        /* --- UPLOAD BOXES --- */
+        .upload-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+        }
+
+        .upload-box {
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed var(--border);
+            border-radius: 20px; padding: 30px;
+            text-align: center; transition: 0.3s;
+            position: relative;
+        }
+
+        .upload-box:hover { border-color: var(--spidey-red); background: rgba(226, 54, 54, 0.05); }
+
+        .upload-box input {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; opacity: 0; cursor: pointer;
+        }
+
+        .box-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+        
+        /* --- SAVED ITEMS --- */
+        #saved-section { margin-top: 40px; }
+        .file-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .file-item {
+            background: var(--spidey-blue); padding: 15px; border-radius: 12px;
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+            border-left: 4px solid var(--spidey-red);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .unlocked #lock-screen { display: none; }
+        .unlocked #dashboard { display: block; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Website 🚀</h1>
-    <p>This website is live on GitHub Pages!</p>
+
+    <!-- LOCK SCREEN -->
+    <div id="lock-screen">
+        <div class="glass-card">
+            <div class="title">SHLOK'S</div>
+            <div class="title" style="font-size: 1.5rem; margin-top: -10px; color: white;">PERSONAL VAULT</div>
+            
+            <div class="pin-dots" id="pin-dots">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+
+            <div class="keypad" id="keypad">
+                <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+                <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+                <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+                <div class="key" style="font-size: 10px;">RESET</div><div class="key">0</div><div class="key">🕷️</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+        <div class="spidey-header">
+            <div>
+                <h1 style="font-family: 'Bangers'; color: var(--spidey-red); margin: 0; font-size: 2.5rem;">WELCOME BACK, SHLOK</h1>
+                <p style="margin: 0; color: #aaa;">Your school documents are safe in the web.</p>
+            </div>
+            <!-- Spider-man Cartoon Image -->
+            <img src="https://path-to-a-cartoon-spiderman.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/thumb/3/35/Spider-Man_Game_Cover_Art.jpg/220px-Spider-Man_Game_Cover_Art.jpg'" class="spidey-cartoon" alt="Spidey">
+        </div>
+
+        <div class="upload-grid">
+            <!-- Box 1: ID Cards -->
+            <div class="upload-box">
+                <span class="box-icon">🆔</span>
+                <h3>Identity Docs</h3>
+                <p>Aadhar, School ID, Passport</p>
+                <input type="file" onchange="saveFile(this, 'Identity')">
+            </div>
+
+            <!-- Box 2: Academic -->
+            <div class="upload-box">
+                <span class="box-icon">🎓</span>
+                <h3>Report Cards</h3>
+                <p>Marksheets & Certificates</p>
+                <input type="file" onchange="saveFile(this, 'Academic')">
+            </div>
+
+            <!-- Box 3: Photos -->
+            <div class="upload-box">
+                <span class="box-icon">📸</span>
+                <h3>School Gallery</h3>
+                <p>Trip pics & Memories</p>
+                <input type="file" onchange="saveFile(this, 'Photos')">
+            </div>
+        </div>
+
+        <div id="saved-section">
+            <h2 style="font-family: 'Bangers'; letter-spacing: 1px; color: var(--spidey-red);">MY SAVED WEB (Forever)</h2>
+            <div class="file-list" id="file-list">
+                <!-- Files will appear here -->
+            </div>
+        </div>
+
+        <button onclick="location.reload()" style="margin-top: 50px; background: none; border: 1px solid red; color: white; padding: 10px; cursor: pointer; border-radius: 10px;">Log Out / Lock</button>
+    </div>
+
+    <script>
+        let enteredPin = "";
+        const CORRECT_PIN = "0729";
+
+        // Handle Keypad
+        document.getElementById('keypad').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('key')) return;
+            const val = e.target.innerText;
+
+            if (val === "RESET") {
+                enteredPin = "";
+            } else if (val === "🕷️") {
+                // Secret Spidey button - can act as enter or clear
+                enteredPin = ""; 
+            } else {
+                if(enteredPin.length < 4) enteredPin += val;
+            }
+
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i < enteredPin.length));
+
+            if (enteredPin.length === 4) {
+                if (enteredPin === CORRECT_PIN) {
+                    document.body.classList.add('unlocked');
+                    loadFiles(); // Load files from storage when opened
+                } else {
+                    document.querySelector('.glass-card').style.animation = "shake 0.4s";
+                    setTimeout(() => {
+                        enteredPin = "";
+                        dots.forEach(d => d.classList.remove('active'));
+                        document.querySelector('.glass-card').style.animation = "";
+                    }, 500);
+                }
+            }
+        });
+
+        // Save File Function (Storage Persistence)
+        function saveFile(input, category) {
+            if (input.files && input.files[0]) {
+                const fileName = input.files[0].name;
+                const fileData = { name: fileName, cat: category };
+                
+                // Get existing files
+                let files = JSON.parse(localStorage.getItem('shlok_files')) || [];
+                files.push(fileData);
+                
+                // Save back to local storage
+                localStorage.setItem('shlok_files', JSON.stringify(files));
+                
+                renderFile(fileData);
+                alert("File caught in the web! Saved safely.");
+            }
+        }
+
+        // Render a single file item
+        function renderFile(file) {
+            const list = document.getElementById('file-list');
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<span>📄</span> <div><b>${file.name}</b><br><small>${file.cat}</small></div>`;
+            list.appendChild(item);
+        }
+
+        // Load all files on unlock
+        function loadFiles() {
+            const list = document.getElementById('file-list');
+            list.innerHTML = ""; // Clear
+            let files = JSON.parse(localStorage.getItem('shlok_files')) || [];
+            files.forEach(file => renderFile(file));
+        }
+    </script>
+
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
 </body>
 </html>
-
